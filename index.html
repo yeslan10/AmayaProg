@@ -73,8 +73,8 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--acc);outline-of
       par : push, pull, jambes ou upper.
    ============================================================ */
 const JOURS = [
-  {id:'lundi',    nom:'Lundi',    prog:'push'},
-  {id:'mercredi', nom:'Mercredi', prog:'pull'},
+  {id:'lundi',    nom:'Lundi',    prog:'pull'},
+  {id:'mercredi', nom:'Mercredi', prog:'push'},
   {id:'jeudi',    nom:'Jeudi',    prog:'jambes'},
   {id:'samedi',   nom:'Samedi',   prog:'upper'}
 ];
@@ -86,33 +86,33 @@ const JOURS = [
       (le lien doit pointer directement vers l'image)
    ============================================================ */
 const IMAGES = {
-  // Lundi · Push
+  // Mercredi · Push
   'push-a': 'https://www.repcountapp.com/images/exercises/bench-press.jpg',
-  'push-b': '',
-  'push-c': '',
-  'push-d1': '',
-  'push-d2': '',
-  'push-e': '',
-  // Mercredi · Pull
-  'pull-a': '',
-  'pull-b': '',
-  'pull-c': '',
-  'pull-d': '',
-  'pull-e': '',
+  'push-b': 'https://nattyfitness.fr/wp-content/uploads/2017/10/D%C3%A9velopp%C3%A9-inclin%C3%A9-halt%C3%A8res-4-e1508497418586.jpg',
+  'push-c': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRhWGlt53F8r6HcSMo1gJ4Thi2iCkC8tKCMyxZHrnIAgQ&s=10',
+  'push-d1': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT34LKpdDR1tydwMh1_9411kHbu3WO_-Uh7StfHJ22g9A&s=10',
+  'push-d2': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuoxTD2_hAP34HxX29e6NXIMpEI5_kIFTNNyugR7w_XA&s=10',
+  'push-e': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQNLcFsSiQaukwHr7HO30VAuZNY5TsZgJtmCPry-sDjYw&s=10',
+  // Lundi · Pull
+  'pull-a': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZHC_KgJcm4JUl7pTIxPRq5D73VPCy6mAgHjchdXqdBQ&s=10',
+  'pull-b': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT0KRlkcswHcgeJGxHQHCOWlXuR_4SYVi0SeJ5wisUndg&s=10',
+  'pull-c': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQAFI3iG9Kyqant12QsEUy-cY10mrXy7ldx2Vab6Gx8KQ&s=10',
+  'pull-d': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRqlvcTFMswSal_LPlYuI_VHME4LbpUuvWIkb8loY2fXQ&s=10',
+  'pull-e': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSaDo2BZBZsge_j7fi3A1KbKfiZJhbhehapWGpzKL4ghQ&s=10',
   // Jeudi · Jambes
-  'jambes-a': '',
-  'jambes-b': '',
-  'jambes-c': '',
-  'jambes-d': '',
-  'jambes-e': '',
+  'jambes-a': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcREAbDrbKSO52YRLsVlCLHBsmZw6MfeBAifohQXWqcWQw&s=10',
+  'jambes-b': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTKwmGrIuZWVfz2_UanSrGHYogEvJi_tYLo4oBgdaLwpA&s=10',
+  'jambes-c': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQG6nMAw6bvvQtuwojKb8k99jZcwO6miX2A_GjOzLnzwQ&s=10',
+  'jambes-d': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTLlQkwB9vz_oel-rq5F4CfiW9LEoJmgZQ1sLt0BOgjEg&s=10',
+  'jambes-e': 'https://www.repcountapp.com/images/exercises/standing-dumbbell-calf-raise.jpg',
   // Samedi · Upper
-  'upper-a': '',
-  'upper-b': '',
-  'upper-c1': '',
-  'upper-c2': '',
-  'upper-d1': '',
-  'upper-d2': '',
-  'upper-e': ''
+  'upper-a': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQejyfWwCKYP0HMC3w1CsfwnUzZrlMosSd5bdkrAz9-ww&s=10',
+  'upper-b': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTvreB2g0GtogDR0iobiO9RkBCXC-qePhQ11IlZeE_2Jg&s=10',
+  'upper-c1': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTe6rLx756Hv9yiqEHaZFmeyiuRErd0tFJMi4cqPeAUZQ&s=10',
+  'upper-c2': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRqlvcTFMswSal_LPlYuI_VHME4LbpUuvWIkb8loY2fXQ&s=10',
+  'upper-d1': 'https://zepraug.app/ressources/guides/curl-pupitre/curl-pupitre-debout-sur-un-banc.webp',
+  'upper-d2': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQFw9lrIsQREiptVLaUV_Z31N93KKASYMPh5EUfiT3wOQ&s=10',
+  'upper-e': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQY3evB7ad29n3iGs5t5_YgXroWRsxWYl-SFreRLzjI5w&s=10'
 };
 
 /* ============================================================
@@ -150,7 +150,7 @@ const PROGS = {
   upper: {nom:'Upper', duree:45,
     echauf:'2 min cardio + 8 face-pull + 8 row léger + 8 développé haltères léger.',
     ex:[
-      {id:'upper-a',  code:'A',  nom:'Développé haltères ou machine (plat ou incliné)', series:'3 × 8-12',  repos:'90-120 s', note:'Prends l’inverse du lundi.'},
+      {id:'upper-a',  code:'A',  nom:'Développé haltères ou machine (plat ou incliné)', series:'3 × 8-12',  repos:'90-120 s', note:'Prends l’inverse du mercredi (Push).'},
       {id:'upper-b',  code:'B',  nom:'Row poitrine calée ou seated row serré',          series:'3 × 8-12',  repos:'90 s'},
       {id:'upper-c1', code:'C1', nom:'Élévations latérales',                            series:'2 × 12-15', repos:'avec C2'},
       {id:'upper-c2', code:'C2', nom:'Oiseau / pec-deck inversé',                       series:'2 × 12-15', repos:'75 s'},
