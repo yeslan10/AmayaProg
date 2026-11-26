@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#14202b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Salle de sport</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef1f4;--card:#fff;--ink:#14202b;--mute:#5d6b78;--line:#d5dce3;--acc:#2f5bff;--accink:#fff;--ph:#e1e7ec}
+@media(prefers-color-scheme:dark){:root{--bg:#0e151c;--card:#17212b;--ink:#e8edf2;--mute:#92a0ad;--line:#2a3743;--acc:#6f8cff;--accink:#0e151c;--ph:#223040}}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:400 16px/1.45 Barlow,system-ui,sans-serif;padding:env(safe-area-inset-top) 16px calc(env(safe-area-inset-bottom) + 24px);max-width:640px;margin:0 auto}
+h1,h2,.num{font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700;letter-spacing:.2px}
+h1{font-size:40px;margin:28px 0 4px;line-height:1}
+.sub{color:var(--mute);margin:0 0 20px}
+.days{display:grid;gap:12px}
+.day{display:flex;justify-content:space-between;align-items:center;width:100%;padding:20px;border:0;border-radius:14px;background:var(--ink);color:var(--bg);text-align:left;cursor:pointer;font:inherit}
+.day b{display:block;font:700 30px/1 'Barlow Condensed','Arial Narrow',sans-serif}
+.day span{opacity:.75;font-size:15px}
+.day i{font-style:normal;font-size:28px}
+.tools{display:flex;gap:10px;margin-top:24px}
+.tools button,.back{flex:1;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:500 15px Barlow,sans-serif;cursor:pointer}
+.back{flex:none;margin-top:20px;padding:10px 14px}
+.hint{color:var(--mute);font-size:14px;margin-top:10px}
+h2{font-size:34px;margin:16px 0 6px;line-height:1}
+.warm{background:var(--card);border-left:4px solid var(--acc);padding:10px 14px;border-radius:8px;margin:12px 0 18px;font-size:15px}
+.ex{background:var(--card);border-radius:14px;overflow:hidden;margin-bottom:14px;border:1px solid var(--line)}
+.ex img,.ph{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;background:var(--ph)}
+.ph{display:grid;place-items:center;color:var(--mute);font-size:14px;text-align:center;padding:8px}
+.body{padding:14px 16px 16px}
+.ex h3{margin:0 0 8px;font-size:18px;font-weight:500}
+.ex h3 em{font:700 20px 'Barlow Condensed','Arial Narrow',sans-serif;font-style:normal;color:var(--acc);margin-right:8px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.chip{border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:14px}
+.chip b{font-weight:500}
+.note{color:var(--mute);font-size:14px;margin:0 0 12px}
+label{display:flex;align-items:center;gap:10px;font-weight:500}
+input[type=number]{width:110px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:700 22px 'Barlow Condensed',sans-serif}
+button:focus-visible,input:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+
+<main id="home">
+  <h1>Salle de sport</h1>
+  <p class="sub">Choisis la séance du jour.</p>
+  <div class="days" id="days"></div>
+  <div class="tools">
+    <button id="exp">Exporter mes poids</button>
+    <button id="imp">Importer</button>
+  </div>
+  <input type="file" id="file" accept="application/json,.json" hidden>
+  <p class="hint" id="msg">Les poids sont enregistrés sur cet appareil. Exporte de temps en temps pour avoir une sauvegarde.</p>
+</main>
+
+<main id="page" hidden>
+  <button class="back" id="back">← Retour</button>
+  <h2 id="title"></h2>
+  <div class="warm" id="warm"></div>
+  <div id="list"></div>
+</main>
+
+<script>
+/* ============================================================
+   1) JOURS : quel programme est affiché sur quel bouton.
+      Pour changer un jour, remplace la valeur de "prog"
+      par : push, pull, jambes ou upper.
+   ============================================================ */
+const JOURS = [
+  {id:'lundi',    nom:'Lundi',    prog:'push'},
+  {id:'mercredi', nom:'Mercredi', prog:'pull'},
+  {id:'jeudi',    nom:'Jeudi',    prog:'jambes'},
+  {id:'samedi',   nom:'Samedi',   prog:'upper'}
+];
+
+/* ============================================================
+   2) PROGRAMMES
+   Chaque exercice a un "id". Son image se met dans le dossier
+   images/ avec CE NOM EXACT : images/<id>.jpg
+   (.png, .webp et .gif marchent aussi)
+   Exemple : images/push-a.jpg
+   ============================================================ */
+const PROGS = {
+  push: {nom:'Push', duree:45,
+    echauf:'2 min cardio + rotations d’épaules + 8 face-pull élastique + 8 pompes inclinées + 1 série légère du développé.',
+    ex:[
+      {id:'push-a',  code:'A',  nom:'Développé haltères banc plat (ou barre / presse pecs)', series:'3 × 6-10',  repos:'2 min'},       // ← images/push-a.jpg
+      {id:'push-b',  code:'B',  nom:'Développé incliné haltères (30-45°)',                   series:'3 × 8-12',  repos:'90-120 s'},    // ← images/push-b.jpg
+      {id:'push-c',  code:'C',  nom:'Élévations latérales haltères',                         series:'3 × 10-15', repos:'60-75 s'},     // ← images/push-c.jpg
+      {id:'push-d1', code:'D1', nom:'Écarté machine ou câbles',                              series:'2 × 10-15', repos:'avec D2'},     // ← images/push-d1.jpg
+      {id:'push-d2', code:'D2', nom:'Extension triceps câble ou haltère',                    series:'3 × 10-15', repos:'75 s'},        // ← images/push-d2.jpg
+      {id:'push-e',  code:'E',  nom:'Développé militaire assis haltères',                    series:'2 × 6-10',  repos:'90 s', note:'Si le temps reste.'} // ← images/push-e.jpg
+    ]},
+  pull: {nom:'Pull', duree:45,
+    echauf:'2 min rameur + 10 scapula pull-up ou band pull-apart + 8 row élastique + 1 série légère du row.',
+    ex:[
+      {id:'pull-a', code:'A', nom:'Traction assistée ou pull-down large', series:'4 × 6-10',  repos:'2 min'},    // ← images/pull-a.jpg
+      {id:'pull-b', code:'B', nom:'Row barre penché ou row haltère 1 bras', series:'3 × 6-10', repos:'90-120 s'}, // ← images/pull-b.jpg
+      {id:'pull-c', code:'C', nom:'Tirage horizontal machine / câble',    series:'3 × 8-12',  repos:'75-90 s'},  // ← images/pull-c.jpg
+      {id:'pull-d', code:'D', nom:'Face pull corde ou oiseau haltères',   series:'3 × 12-15', repos:'60 s'},     // ← images/pull-d.jpg
+      {id:'pull-e', code:'E', nom:'Curl barre EZ ou haltères',            series:'3 × 8-12',  repos:'75 s'}      // ← images/pull-e.jpg
+    ]},
+  jambes: {nom:'Jambes', duree:45,
+    echauf:'2 min vélo + 10 goblet squat léger + 8 hip hinge + 8 pont fessier + 1 série légère de squat.',
+    ex:[
+      {id:'jambes-a', code:'A', nom:'Squat barre, goblet ou presse à cuisses', series:'4 × 6-10',       repos:'2 min'},   // ← images/jambes-a.jpg
+      {id:'jambes-b', code:'B', nom:'RDL haltères ou barre',                   series:'3 × 6-10',       repos:'2 min'},   // ← images/jambes-b.jpg
+      {id:'jambes-c', code:'C', nom:'Fente arrière ou split squat',            series:'3 × 8-12 / côté', repos:'75-90 s'}, // ← images/jambes-c.jpg
+      {id:'jambes-d', code:'D', nom:'Leg curl machine (ou pont 1 jambe)',      series:'2 × 10-15',      repos:'60-75 s'}, // ← images/jambes-d.jpg
+      {id:'jambes-e', code:'E', nom:'Mollets debout ou presse',                series:'3 × 10-15',      repos:'45-60 s'}  // ← images/jambes-e.jpg
+    ]},
+  upper: {nom:'Upper', duree:45,
+    echauf:'2 min cardio + 8 face-pull + 8 row léger + 8 développé haltères léger.',
+    ex:[
+      {id:'upper-a',  code:'A',  nom:'Développé haltères ou machine (plat ou incliné)', series:'3 × 8-12',  repos:'90-120 s', note:'Prends l’inverse du lundi.'}, // ← images/upper-a.jpg
+      {id:'upper-b',  code:'B',  nom:'Row poitrine calée ou seated row serré',          series:'3 × 8-12',  repos:'90 s'},     // ← images/upper-b.jpg
+      {id:'upper-c1', code:'C1', nom:'Élévations latérales',                            series:'2 × 12-15', repos:'avec C2'},  // ← images/upper-c1.jpg
+      {id:'upper-c2', code:'C2', nom:'Oiseau / pec-deck inversé',                       series:'2 × 12-15', repos:'75 s'},     // ← images/upper-c2.jpg
+      {id:'upper-d1', code:'D1', nom:'Curl pupitre ou haltères incliné',                series:'2 × 10-15', repos:'avec D2'},  // ← images/upper-d1.jpg
+      {id:'upper-d2', code:'D2', nom:'Extension triceps au-dessus de la tête ou corde', series:'2 × 10-15', repos:'75 s'},     // ← images/upper-d2.jpg
+      {id:'upper-e',  code:'E',  nom:'Écarté câbles ou pec-deck',                       series:'1 × 12-15', repos:'—', note:'Si le temps reste.'} // ← images/upper-e.jpg
+    ]}
+};
+
+/* ============================================================
+   3) CODE (pas besoin d'y toucher)
+   ============================================================ */
+const KEY = 'poids-salle-v1';
+const EXTS = ['jpg','png','webp','gif'];
+const $ = id => document.getElementById(id);
+
+function load(){ try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch(e){ return {}; } }
+function save(d){ try { localStorage.setItem(KEY, JSON.stringify(d)); return true; } catch(e){ return false; } }
+let poids = load();
+
+function renderHome(){
+  $('days').innerHTML = JOURS.map(j => {
+    const p = PROGS[j.prog];
+    return `<button class="day" data-id="${j.id}"><div><b>${j.nom}</b><span>${p.nom} · ${p.ex.length} exercices · ${p.duree} min</span></div><i aria-hidden="true">›</i></button>`;
+  }).join('');
+}
+
+function imgTag(id){
+  let i = 0;
+  const img = document.createElement('img');
+  img.alt = '';
+  img.loading = 'lazy';
+  img.onerror = () => {
+    i++;
+    if (i < EXTS.length) { img.src = `images/${id}.${EXTS[i]}`; return; }
+    const ph = document.createElement('div');
+    ph.className = 'ph';
+    ph.textContent = `Image à ajouter : images/${id}.jpg`;
+    img.replaceWith(ph);
+  };
+  img.src = `images/${id}.${EXTS[0]}`;
+  return img;
+}
+
+function renderDay(jid){
+  const j = JOURS.find(x => x.id === jid);
+  if (!j) return showHome();
+  const p = PROGS[j.prog];
+  $('title').textContent = `${j.nom} · ${p.nom}`;
+  $('warm').innerHTML = `<b>Échauffement (5 min) :</b> ${p.echauf}`;
+  const list = $('list');
+  list.innerHTML = '';
+  p.ex.forEach(e => {
+    const el = document.createElement('article');
+    el.className = 'ex';
+    el.innerHTML = `<div class="img"></div>
+      <div class="body">
+        <h3><em>${e.code}</em>${e.nom}</h3>
+        <div class="chips"><span class="chip">Séries × reps : <b>${e.series}</b></span><span class="chip">Repos : <b>${e.repos}</b></span></div>
+        ${e.note ? `<p class="note">${e.note}</p>` : ''}
+        <label>Poids (kg)
+          <input type="number" inputmode="decimal" step="0.5" min="0" placeholder="0" data-id="${e.id}" value="${poids[e.id] ?? ''}">
+        </label>
+      </div>`;
+    el.querySelector('.img').replaceWith(imgTag(e.id));
+    list.appendChild(el);
+  });
+  $('home').hidden = true;
+  $('page').hidden = false;
+  window.scrollTo(0, 0);
+}
+
+function showHome(){
+  $('page').hidden = true;
+  $('home').hidden = false;
+  if (location.hash) history.replaceState(null, '', location.pathname);
+}
+
+function route(){
+  const h = location.hash.slice(1);
+  h ? renderDay(h) : (renderHome(), showHome());
+}
+
+$('days').addEventListener('click', e => {
+  const b = e.target.closest('.day');
+  if (b) location.hash = b.dataset.id;
+});
+$('back').addEventListener('click', () => { location.hash = ''; });
+window.addEventListener('hashchange', route);
+
+$('list').addEventListener('input', e => {
+  const t = e.target;
+  if (t.dataset.id === undefined) return;
+  if (t.value === '') delete poids[t.dataset.id]; else poids[t.dataset.id] = t.value;
+  if (!save(poids)) $('msg').textContent = 'Impossible d’enregistrer sur cet appareil (navigation privée ?).';
+});
+
+$('exp').addEventListener('click', () => {
+  const blob = new Blob([JSON.stringify(poids, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'poids-salle.json';
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  $('msg').textContent = 'Fichier poids-salle.json téléchargé : garde-le précieusement.';
+});
+
+$('imp').addEventListener('click', () => $('file').click());
+$('file').addEventListener('change', async e => {
+  const f = e.target.files[0];
+  e.target.value = '';
+  if (!f) return;
+  try {
+    const d = JSON.parse(await f.text());
+    if (!d || typeof d !== 'object' || Array.isArray(d)) throw 0;
+    poids = Object.fromEntries(Object.entries(d).filter(([k, v]) => typeof k === 'string' && (typeof v === 'string' || typeof v === 'number')).map(([k, v]) => [k, String(v)]));
+    save(poids);
+    $('msg').textContent = 'Poids importés.';
+  } catch(err) {
+    $('msg').textContent = 'Fichier invalide : choisis un fichier poids-salle.json exporté depuis ce site.';
+  }
+});
+
+route();
+</script>
+</body>
+</html>
